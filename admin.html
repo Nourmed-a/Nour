@@ -11,12 +11,16 @@
     .btn-primary{background:#2878ff;color:#fff;border:none;padding:8px 14px}
     .card{background:#fff;border:1px solid #e7ebf3;border-radius:14px;padding:12px;margin:10px 0}
     .hidden{display:none}
+    label{font-size:14px;color:#555}
   </style>
 </head>
 <body>
   <div id="login">
     <h1>Admin Login</h1>
     <input type="password" id="password" placeholder="Enter password">
+    <br>
+    <label><input type="checkbox" onclick="togglePassword()"> Show Password</label>
+    <br>
     <button class="btn btn-primary" onclick="login()">Login</button>
   </div>
 
@@ -34,9 +38,10 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
-  import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } 
+  import { getFirestore, collection, addDoc, getDocs } 
     from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
+  // 🔹 Firebase Config
   const firebaseConfig = {
     apiKey: "AIzaSyBPycKJcjB_WvO8D1hD7niGkVmu9Hdo1SU",
     authDomain: "nour-69023.firebaseapp.com",
@@ -50,11 +55,17 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  const ADMIN_PASS="nour2025"; // change this password
+  // 🔹 Login password
+  const ADMIN_PASS="nour123";
 
-  // Cloudinary
-  const CLOUD_NAME = "YOUR_CLOUD_NAME";
-  const UPLOAD_PRESET = "YOUR_UPLOAD_PRESET";
+  // 🔹 Cloudinary Config
+  const CLOUD_NAME = "YOUR_CLOUD_NAME";      // replace with your cloud name
+  const UPLOAD_PRESET = "YOUR_UPLOAD_PRESET"; // replace with your preset
+
+  function togglePassword(){
+    const pwd=document.getElementById("password");
+    pwd.type = pwd.type==="password" ? "text" : "password";
+  }
 
   function login(){
     if(document.getElementById('password').value===ADMIN_PASS){
