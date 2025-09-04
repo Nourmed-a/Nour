@@ -19,9 +19,9 @@
     <h1>Admin Login</h1>
     <input type="password" id="password" placeholder="Enter password">
     <br>
-    <label><input type="checkbox" onclick="togglePassword()"> Show Password</label>
+    <label><input type="checkbox" onclick="window.togglePassword()"> Show Password</label>
     <br>
-    <button class="btn btn-primary" onclick="login()">Login</button>
+    <button class="btn btn-primary" onclick="window.login()">Login</button>
   </div>
 
   <div id="dashboard" class="hidden">
@@ -30,7 +30,7 @@
     <input type="text" id="name_ar" placeholder="Product name (Arabic)"><br>
     <input type="file" id="fileInput"><br>
     <input type="number" id="price" placeholder="Price (USD)" step="0.01"><br>
-    <button class="btn btn-primary" onclick="addProduct()">Save Product</button>
+    <button class="btn btn-primary" onclick="window.addProduct()">Save Product</button>
 
     <h3>Current Products</h3>
     <div id="product-list"></div>
@@ -38,7 +38,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
-  import { getFirestore, collection, addDoc, getDocs } 
+  import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } 
     from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
   // 🔹 Firebase Config
@@ -58,16 +58,18 @@
   // 🔹 Login password
   const ADMIN_PASS="nour123";
 
-  // 🔹 Cloudinary Config
-  const CLOUD_NAME = "YOUR_CLOUD_NAME";      // replace with your cloud name
-  const UPLOAD_PRESET = "YOUR_UPLOAD_PRESET"; // replace with your preset
+  // 🔹 Cloudinary Config (replace with your values)
+  const CLOUD_NAME = "YOUR_CLOUD_NAME";
+  const UPLOAD_PRESET = "YOUR_UPLOAD_PRESET";
 
-  function togglePassword(){
+  // Show/Hide password
+  window.togglePassword = function(){
     const pwd=document.getElementById("password");
     pwd.type = pwd.type==="password" ? "text" : "password";
   }
 
-  function login(){
+  // Login
+  window.login = function(){
     if(document.getElementById('password').value===ADMIN_PASS){
       document.getElementById('login').classList.add('hidden');
       document.getElementById('dashboard').classList.remove('hidden');
@@ -75,6 +77,7 @@
     } else alert("Wrong password");
   }
 
+  // Upload image to Cloudinary
   async function uploadImage(file){
     const formData = new FormData();
     formData.append("file", file);
@@ -89,7 +92,8 @@
     return data.secure_url;
   }
 
-  async function addProduct(){
+  // Add product to Firestore
+  window.addProduct = async function(){
     const en=document.getElementById("name_en").value.trim();
     const ar=document.getElementById("name_ar").value.trim();
     const file=document.getElementById("fileInput").files[0];
@@ -117,6 +121,14 @@
     loadProducts();
   }
 
+  // Delete product
+  window.deleteProduct = async function(id){
+    await deleteDoc(doc(db, "products", id));
+    alert("Product deleted!");
+    loadProducts();
+  }
+
+  // Load products
   async function loadProducts(){
     const list=document.getElementById("product-list");list.innerHTML="";
     const snapshot=await getDocs(collection(db,"products"));
@@ -125,7 +137,8 @@
       let div=document.createElement("div");
       div.className="card";
       div.innerHTML=`<strong>${p.name}</strong> / ${p.name_ar || "—"} — $${p.price.toFixed(2)}<br>
-        <img src="${p.image}" style="max-width:100px"><br>`;
+        <img src="${p.image}" style="max-width:100px"><br>
+        <button onclick="window.deleteProduct('${d.id}')">Delete</button>`;
       list.appendChild(div);
     });
   }
