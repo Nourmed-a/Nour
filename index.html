@@ -1,0 +1,140 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Nour Orthopaedics — Official Website</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#fafbfd;--panel:#fff;--line:#e7ebf3;--muted:#6b7890;--text:#0e1a37;
+      --brand:#2878ff;--brand-weak:#e7f0ff;
+    }
+    body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif}
+    a{text-decoration:none}
+    .container{max-width:1100px;margin:0 auto;padding:20px}
+    header{display:flex;align-items:center;justify-content:space-between;padding:10px 0;flex-wrap:wrap;gap:10px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#2c5bff,#54a0ff);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800}
+    nav{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+    .btn{padding:10px 16px;border-radius:10px;font-weight:600}
+    .btn-primary{background:var(--brand);color:#fff}
+    .btn-outline{background:#fff;border:1px solid var(--line);color:var(--text)}
+    section{padding:18px 0}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px}
+    .muted{color:var(--muted);font-size:14px}
+    footer{text-align:center;margin-top:26px;border-top:1px solid var(--line);padding:18px 0;color:#71809a}
+    .address{margin-top:8px}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <div class="brand">
+        <div class="logo">N</div>
+        <div>
+          <div class="title">NOUR TRADING &amp; SERVICES CO. LTD</div>
+          <div class="tag" id="header-tag">Exclusive distributor in Sudan for Sony Surgicals Pvt. Ltd.</div>
+        </div>
+      </div>
+      <nav>
+        <a class="btn btn-outline" href="shop.html" id="nav-shop">Shop</a>
+        <a class="btn btn-outline" href="admin.html" id="nav-admin">Admin</a>
+        <a class="btn btn-primary" href="#contact" id="nav-contact">Contact</a>
+        <span>
+          <button onclick="setLang('en')">EN</button> | 
+          <button onclick="setLang('ar')">AR</button>
+        </span>
+      </nav>
+    </header>
+
+
+    <!-- Hero -->
+    <section class="hero">
+      <div>
+        <h1 id="hero-title">Orthopaedic Implants & Instruments — Trusted. Ready. Fast.</h1>
+        <p id="hero-text">Supplying hospitals and surgeons with high-quality implants and instruments, delivered within 24 hours across Sudan.</p>
+      </div>
+    </section>
+
+
+    <!-- Products -->
+    <section>
+      <h2 id="products-title">Product Highlights</h2>
+      <div class="grid">
+        <div class="card"><h3 id="p1">PFNA2 Nail</h3><p class="muted" id="p1-desc">Clean 3D render. Sizes and options available.</p></div>
+        <div class="card"><h3 id="p2">Drill Machine</h3><p class="muted" id="p2-desc">Reliable performance for theatre workflows.</p></div>
+        <div class="card"><h3 id="p3">Titanium vs Stainless Steel</h3><p class="muted" id="p3-desc">Side-by-side comparison visual for education.</p></div>
+        <div class="card"><h3 id="p4">External Fixator</h3><p class="muted" id="p4-desc">Rugged build with modular configurations.</p></div>
+      </div>
+    </section>
+
+
+    <!-- Contact -->
+    <section id="contact">
+      <h2 id="contact-title">Contact</h2>
+      <div class="grid">
+        <div class="card"><strong id="contact-phone-label">Phone / WhatsApp</strong><p class="muted">+249111066056 / +249916990070</p></div>
+        <div class="card"><strong id="contact-email-label">Email</strong><p class="muted">Nour.sud.2016@gmail.com</p></div>
+        <div class="card"><strong id="contact-business-label">Business</strong><p class="muted" id="contact-business-text">Delivery within 24 hours · Payment via bank transfer</p></div>
+      </div>
+    </section>
+
+
+    <!-- Footer -->
+    <footer>
+      <span id="footer-text">© <span id="year"></span> Nour Orthopaedics · Exclusive distributor in Sudan for Sony Surgicals Pvt. Ltd.</span>
+      <div class="address">شارع الوادي تقاطع الأبراج، الواحة، أم درمان</div>
+    </footer>
+  </div>
+
+
+  <script>
+    document.getElementById('year').textContent=new Date().getFullYear();
+    let lang=localStorage.getItem("lang")||"en";
+
+
+    const texts={
+      en:{
+        "header-tag":"Exclusive distributor in Sudan for Sony Surgicals Pvt. Ltd.",
+        "nav-shop":"Shop","nav-admin":"Admin","nav-contact":"Contact",
+        "hero-title":"Orthopaedic Implants & Instruments — Trusted. Ready. Fast.",
+        "hero-text":"Supplying hospitals and surgeons with high-quality implants and instruments, delivered within 24 hours across Sudan.",
+        "products-title":"Product Highlights",
+        "p1":"PFNA2 Nail","p1-desc":"Clean 3D render. Sizes and options available.",
+        "p2":"Drill Machine","p2-desc":"Reliable performance for theatre workflows.",
+        "p3":"Titanium vs Stainless Steel","p3-desc":"Side-by-side comparison visual for education.",
+        "p4":"External Fixator","p4-desc":"Rugged build with modular configurations.",
+        "contact-title":"Contact","contact-phone-label":"Phone / WhatsApp","contact-email-label":"Email","contact-business-label":"Business","contact-business-text":"Delivery within 24 hours · Payment via bank transfer",
+        "footer-text":"© "+new Date().getFullYear()+" Nour Orthopaedics · Exclusive distributor in Sudan for Sony Surgicals Pvt. Ltd."
+      },
+      ar:{
+        "header-tag":"الموزع الحصري في السودان لشركة سوني سيرجيكالز برايفت ليمتد.",
+        "nav-shop":"المتجر","nav-admin":"الإدارة","nav-contact":"اتصل بنا",
+        "hero-title":"زرعات وأدوات العظام — ثقة. استعداد. كفاءة.",
+        "hero-text":"نوفر للمستشفيات والجراحين منتجات عالية الجودة، مع توصيل خلال 24 ساعة في جميع أنحاء السودان.",
+        "products-title":"أبرز المنتجات",
+        "p1":"مسمار PFNA2","p1-desc":"تصميم ثلاثي الأبعاد. متوفر بمقاسات وخيارات متعددة.",
+        "p2":"جهاز الحفر","p2-desc":"أداء موثوق لعمليات غرف العمليات.",
+        "p3":"تيتانيوم مقابل ستانلس ستيل","p3-desc":"  جنبًا إلى جنب.",
+        "p4":"المثبت الخارجي","p4-desc":"تصميم متين بخيارات تركيب متعددة.",
+        "contact-title":"اتصل بنا","contact-phone-label":"هاتف / واتساب","contact-email-label":"البريد الإلكتروني","contact-business-label":"الأعمال","contact-business-text":"توصيل خلال 24 ساعة · الدفع عبر التحويل البنكي",
+        "footer-text":"© "+new Date().getFullYear()+" نور للتجهيزات الطبية · الموزع الحصري في السودان لشركة سوني سيرجيكالز برايفت ليمتد."
+      }
+    };
+
+
+    function setLang(l){
+      lang=l;localStorage.setItem("lang",l);
+      for(let id in texts[l]){
+        const el=document.getElementById(id);
+        if(el) el.textContent=texts[l][id];
+      }
+      document.body.dir=(l==="ar")?"rtl":"ltr";
+    }
+    setLang(lang);
+  </script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Nour Orthopaedics — Shop</title>
+  <style>
+    body{font-family:Inter,system-ui,sans-serif;background:#fafbfd;color:#0e1a37;margin:0;padding:20px}
+    .topbar{text-align:right;margin-bottom:10px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+    .card{background:#fff;border:1px solid #e7ebf3;border-radius:14px;padding:14px}
+    .img-box{aspect-ratio:4/3;border:1px dashed #dbe2ee;border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+    .img-box img{max-width:100%;max-height:100%}
+    input[type=number]{width:60px;padding:6px;margin-top:6px;border:1px solid #dbe2ee;border-radius:8px}
+    .btn{padding:10px 16px;border-radius:10px;font-weight:600;cursor:pointer}
+    .btn-primary{background:#2878ff;color:#fff;border:none}
+    .checkout{margin-top:24px;text-align:center}
+    #basket{margin-top:20px;padding:14px;background:#fff;border:1px solid #e7ebf3;border-radius:14px}
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <button onclick="setLang('en')">EN</button> | 
+    <button onclick="setLang('ar')">AR</button>
+  </div>
+
+
+  <h1 id="title">Shop — Nour Orthopaedics</h1>
+  <p id="subtitle">Select products, adjust quantities, and see your total instantly.</p>
+
+
+  <div class="grid" id="product-list"></div>
+
+
+  <div id="basket">
+    <h3 id="basket-title">Your Basket</h3>
+    <ul id="basket-items"></ul>
+    <strong><span id="total-label">Total:</span> $<span id="basket-total">0.00</span></strong>
+  </div>
+
+
+  <div class="checkout">
+    <button class="btn btn-primary" id="order-btn" onclick="sendOrder()">Send Order via WhatsApp</button>
+  </div>
+
+
+<script>
+  let lang=localStorage.getItem("lang")||"en";
+  const texts={
+    en:{title:"Shop — Nour Orthopaedics",subtitle:"Select products, adjust quantities, and see your total instantly.",basket:"Your Basket",total:"Total:",order:"Send Order via WhatsApp"},
+    ar:{title:"المتجر — نور للتجهيزات الطبية",subtitle:"اختر المنتجات وعدّل الكمية وشاهد المجموع مباشرة.",basket:"سلة المشتريات",total:"المجموع:",order:"إرسال الطلب عبر واتساب"}
+  };
+
+
+  function setLang(l){
+    lang=l;localStorage.setItem("lang",l);
+    document.getElementById("title").textContent=texts[l].title;
+    document.getElementById("subtitle").textContent=texts[l].subtitle;
+    document.getElementById("basket-title").textContent=texts[l].basket;
+    document.getElementById("total-label").textContent=texts[l].total;
+    document.getElementById("order-btn").textContent=texts[l].order;
+    loadProducts();updateBasket();
+  }
+
+
+  function getProducts(){return JSON.parse(localStorage.getItem("products")||"[]");}
+
+
+  function loadProducts(){
+    const list=document.getElementById("product-list");list.innerHTML="";
+    getProducts().forEach((p,i)=>{
+      let name=(lang==="ar"&&p.name_ar)?p.name_ar:p.name;
+      let card=document.createElement("div");
+      card.className="card";
+      card.innerHTML=`
+        <h3>${name}</h3>
+        <div class="img-box">${p.image?`<img src="${p.image}">`:"<small>No image</small>"}</div>
+        <p>${lang==="ar"?"السعر":"Price"}: $${p.price.toFixed(2)}</p>
+        <label>${lang==="ar"?"الكمية":"Qty"}: <input type="number" min="0" value="0" data-index="${i}" onchange="updateBasket()"></label>
+      `;
+      list.appendChild(card);
+    });
+  }
+
+
+  function updateBasket(){
+    let products=getProducts(),total=0,items=[];
+    document.querySelectorAll("input[type=number]").forEach(input=>{
+      let qty=parseInt(input.value)||0;
+      if(qty>0){
+        let p=products[input.dataset.index];
+        let name=(lang==="ar"&&p.name_ar)?p.name_ar:p.name;
+        let line=`${name} x ${qty} = $${(p.price*qty).toFixed(2)}`;
+        items.push(line);
+        total+=p.price*qty;
+      }
+    });
+    document.getElementById("basket-items").innerHTML=items.map(i=>`<li>${i}</li>`).join("");
+    document.getElementById("basket-total").textContent=total.toFixed(2);
+  }
+
+
+  function sendOrder(){
+    let items=document.getElementById("basket-items").innerText;
+    let total=document.getElementById("basket-total").textContent;
+    if(!items){alert(lang==="ar"?"السلة فارغة!":"Basket is empty!");return;}
+    let msg=(lang==="ar"?"مرحبا، أود تقديم طلب:%0A":"Hello, I'd like to place an order:%0A")+items+"%0A"+(lang==="ar"?"المجموع = ":"Total = ")+"$"+total;
+    window.open(`https://wa.me/249916990070?text=${msg}`,'_blank');
+  }
+
+
+  setLang(lang);
+</script>
+</body>
+</html>

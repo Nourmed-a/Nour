@@ -1,0 +1,90 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin — Nour Orthopaedics</title>
+  <style>
+    body{font-family:Inter,system-ui,sans-serif;background:#fafbfd;color:#0e1a37;margin:0;padding:20px}
+    input,button{padding:8px;margin:4px 0;border:1px solid #dbe2ee;border-radius:8px}
+    .btn{cursor:pointer;font-weight:600}
+    .btn-primary{background:#2878ff;color:#fff;border:none;padding:8px 14px}
+    .card{background:#fff;border:1px solid #e7ebf3;border-radius:14px;padding:12px;margin:10px 0}
+    .hidden{display:none}
+  </style>
+</head>
+<body>
+  <div id="login">
+    <h1>Admin Login</h1>
+    <input type="password" id="password" placeholder="Enter password">
+    <button class="btn btn-primary" onclick="login()">Login</button>
+  </div>
+
+
+  <div id="dashboard" class="hidden">
+    <h1>Product Manager</h1>
+    <input type="text" id="name_en" placeholder="Product name (English)"><br>
+    <input type="text" id="name_ar" placeholder="Product name (Arabic)"><br>
+    <input type="text" id="image" placeholder="Image URL"><br>
+    <input type="number" id="price" placeholder="Price (USD)" step="0.01"><br>
+    <button class="btn btn-primary" onclick="addProduct()">Save Product</button>
+
+
+    <h3>Current Products</h3>
+    <div id="product-list"></div>
+  </div>
+
+
+<script>
+  const ADMIN_PASS="nour2025"; // Change this password
+
+
+  function login(){
+    if(document.getElementById('password').value===ADMIN_PASS){
+      document.getElementById('login').classList.add('hidden');
+      document.getElementById('dashboard').classList.remove('hidden');
+      loadProducts();
+    }else alert("Wrong password");
+  }
+
+
+  function getProducts(){return JSON.parse(localStorage.getItem("products")||"[]");}
+  function saveProducts(p){localStorage.setItem("products",JSON.stringify(p));}
+
+
+  function addProduct(){
+    const en=document.getElementById("name_en").value.trim();
+    const ar=document.getElementById("name_ar").value.trim();
+    const image=document.getElementById("image").value.trim();
+    const price=parseFloat(document.getElementById("price").value);
+    if(!en||isNaN(price)){alert("Enter product name (EN) & price");return;}
+    let products=getProducts();
+    products.push({name:en,name_ar:ar,image,price});
+    saveProducts(products);
+    document.getElementById("name_en").value="";
+    document.getElementById("name_ar").value="";
+    document.getElementById("image").value="";
+    document.getElementById("price").value="";
+    loadProducts();
+  }
+
+
+  function deleteProduct(i){
+    let p=getProducts();p.splice(i,1);saveProducts(p);loadProducts();
+  }
+
+
+  function loadProducts(){
+    const list=document.getElementById("product-list");list.innerHTML="";
+    getProducts().forEach((p,i)=>{
+      let div=document.createElement("div");
+      div.className="card";
+      div.innerHTML=`<strong>${p.name}</strong> / ${p.name_ar || "—"} — $${p.price.toFixed(2)}<br>
+        <img src="${p.image}" style="max-width:100px"><br>
+        <button onclick="deleteProduct(${i})">Delete</button>`;
+      list.appendChild(div);
+    });
+  }
+</script>
+</body>
+</html>
