@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -20,24 +20,24 @@
     <button class="btn btn-primary" onclick="login()">Login</button>
   </div>
 
-
   <div id="dashboard" class="hidden">
     <h1>Product Manager</h1>
     <input type="text" id="name_en" placeholder="Product name (English)"><br>
     <input type="text" id="name_ar" placeholder="Product name (Arabic)"><br>
-    <input type="text" id="image" placeholder="Image URL"><br>
+    <input type="file" id="fileInput"><br>
     <input type="number" id="price" placeholder="Price (USD)" step="0.01"><br>
     <button class="btn btn-primary" onclick="addProduct()">Save Product</button>
-
 
     <h3>Current Products</h3>
     <div id="product-list"></div>
   </div>
 
-
 <script>
   const ADMIN_PASS="nour2025"; // Change this password
 
+  // Replace with your Cloudinary details
+  const CLOUD_NAME = "YOUR_CLOUD_NAME";
+  const UPLOAD_PRESET = "YOUR_UPLOAD_PRESET";
 
   function login(){
     if(document.getElementById('password').value===ADMIN_PASS){
@@ -47,32 +47,49 @@
     }else alert("Wrong password");
   }
 
-
   function getProducts(){return JSON.parse(localStorage.getItem("products")||"[]");}
   function saveProducts(p){localStorage.setItem("products",JSON.stringify(p));}
 
+  async function uploadImage(file){
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", UPLOAD_PRESET);
 
-  function addProduct(){
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await res.json();
+    return data.secure_url;
+  }
+
+  async function addProduct(){
     const en=document.getElementById("name_en").value.trim();
     const ar=document.getElementById("name_ar").value.trim();
-    const image=document.getElementById("image").value.trim();
+    const file=document.getElementById("fileInput").files[0];
     const price=parseFloat(document.getElementById("price").value);
-    if(!en||isNaN(price)){alert("Enter product name (EN) & price");return;}
+
+    if(!en||isNaN(price)||!file){alert("Enter product name, price, and choose a photo");return;}
+
+    // Upload image to Cloudinary
+    const imageUrl = await uploadImage(file);
+
     let products=getProducts();
-    products.push({name:en,name_ar:ar,image,price});
+    products.push({name:en,name_ar:ar,image:imageUrl,price});
     saveProducts(products);
+
+    // Clear fields
     document.getElementById("name_en").value="";
     document.getElementById("name_ar").value="";
-    document.getElementById("image").value="";
+    document.getElementById("fileInput").value="";
     document.getElementById("price").value="";
     loadProducts();
   }
 
-
   function deleteProduct(i){
     let p=getProducts();p.splice(i,1);saveProducts(p);loadProducts();
   }
-
 
   function loadProducts(){
     const list=document.getElementById("product-list");list.innerHTML="";
