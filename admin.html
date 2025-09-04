@@ -32,23 +32,37 @@
     <div id="product-list"></div>
   </div>
 
-<script>
-  const ADMIN_PASS="nour2025"; // Change this password
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+  import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } 
+    from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
-  // Replace with your Cloudinary details
-  const CLOUD_NAME = "dv808o9yk";
-  const UPLOAD_PRESET = "Nourortho";
+  const firebaseConfig = {
+    apiKey: "AIzaSyBPycKJcjB_WvO8D1hD7niGkVmu9Hdo1SU",
+    authDomain: "nour-69023.firebaseapp.com",
+    projectId: "nour-69023",
+    storageBucket: "nour-69023.firebasestorage.app",
+    messagingSenderId: "627707212129",
+    appId: "1:627707212129:web:0c8f5d27f2716378201520",
+    measurementId: "G-41F577G78H"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  const ADMIN_PASS="nour2025"; // change this password
+
+  // Cloudinary
+  const CLOUD_NAME = "YOUR_CLOUD_NAME";
+  const UPLOAD_PRESET = "YOUR_UPLOAD_PRESET";
 
   function login(){
     if(document.getElementById('password').value===ADMIN_PASS){
       document.getElementById('login').classList.add('hidden');
       document.getElementById('dashboard').classList.remove('hidden');
       loadProducts();
-    }else alert("Wrong password");
+    } else alert("Wrong password");
   }
-
-  function getProducts(){return JSON.parse(localStorage.getItem("products")||"[]");}
-  function saveProducts(p){localStorage.setItem("products",JSON.stringify(p));}
 
   async function uploadImage(file){
     const formData = new FormData();
@@ -70,16 +84,21 @@
     const file=document.getElementById("fileInput").files[0];
     const price=parseFloat(document.getElementById("price").value);
 
-    if(!en||isNaN(price)||!file){alert("Enter product name, price, and choose a photo");return;}
+    if(!en||isNaN(price)||!file){
+      alert("Enter product name, price, and choose a photo");
+      return;
+    }
 
-    // Upload image to Cloudinary
     const imageUrl = await uploadImage(file);
 
-    let products=getProducts();
-    products.push({name:en,name_ar:ar,image:imageUrl,price});
-    saveProducts(products);
+    await addDoc(collection(db, "products"), {
+      name: en,
+      name_ar: ar,
+      price: price,
+      image: imageUrl
+    });
 
-    // Clear fields
+    alert("Product saved!");
     document.getElementById("name_en").value="";
     document.getElementById("name_ar").value="";
     document.getElementById("fileInput").value="";
@@ -87,18 +106,15 @@
     loadProducts();
   }
 
-  function deleteProduct(i){
-    let p=getProducts();p.splice(i,1);saveProducts(p);loadProducts();
-  }
-
-  function loadProducts(){
+  async function loadProducts(){
     const list=document.getElementById("product-list");list.innerHTML="";
-    getProducts().forEach((p,i)=>{
+    const snapshot=await getDocs(collection(db,"products"));
+    snapshot.forEach((d)=>{
+      const p=d.data();
       let div=document.createElement("div");
       div.className="card";
       div.innerHTML=`<strong>${p.name}</strong> / ${p.name_ar || "—"} — $${p.price.toFixed(2)}<br>
-        <img src="${p.image}" style="max-width:100px"><br>
-        <button onclick="deleteProduct(${i})">Delete</button>`;
+        <img src="${p.image}" style="max-width:100px"><br>`;
       list.appendChild(div);
     });
   }
