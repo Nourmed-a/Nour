@@ -39,7 +39,25 @@
     <button class="btn btn-primary" id="order-btn" onclick="sendOrder()">Send Order via WhatsApp</button>
   </div>
 
-<script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+  import { getFirestore, collection, getDocs } 
+    from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
+  // 🔹 Your Firebase Config
+  const firebaseConfig = {
+    apiKey: "AIzaSyBPycKJcjB_WvO8D1hD7niGkVmu9Hdo1SU",
+    authDomain: "nour-69023.firebaseapp.com",
+    projectId: "nour-69023",
+    storageBucket: "nour-69023.firebasestorage.app",
+    messagingSenderId: "627707212129",
+    appId: "1:627707212129:web:0c8f5d27f2716378201520",
+    measurementId: "G-41F577G78H"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
   let lang=localStorage.getItem("lang")||"en";
   const texts={
     en:{title:"Shop — Nour Orthopaedics",subtitle:"Select products, adjust quantities, and see your total instantly.",basket:"Your Basket",total:"Total:",order:"Send Order via WhatsApp"},
@@ -53,19 +71,25 @@
     document.getElementById("basket-title").textContent=texts[l].basket;
     document.getElementById("total-label").textContent=texts[l].total;
     document.getElementById("order-btn").textContent=texts[l].order;
-    loadProducts();updateBasket();
+    loadProducts();
   }
 
-  function getProducts(){return JSON.parse(localStorage.getItem("products")||"[]");}
+  async function getProducts(){
+    const snapshot = await getDocs(collection(db, "products"));
+    let products=[];
+    snapshot.forEach((doc)=>products.push(doc.data()));
+    return products;
+  }
 
-  function loadProducts(){
-    const list=document.getElementById("product-list");
-    list.innerHTML="";
-    let products=getProducts();
+  async function loadProducts(){
+    const list=document.getElementById("product-list");list.innerHTML="";
+    const products=await getProducts();
+
     if(products.length===0){
       list.innerHTML="<p>No products available. Please add items from the Admin page.</p>";
       return;
     }
+
     products.forEach((p,i)=>{
       let name=(lang==="ar"&&p.name_ar)?p.name_ar:p.name;
       let card=document.createElement("div");
@@ -74,18 +98,18 @@
         <h3>${name}</h3>
         <div class="img-box">${p.image?`<img src="${p.image}" alt="${name}">`:"<small>No image</small>"}</div>
         <p>${lang==="ar"?"السعر":"Price"}: $${p.price.toFixed(2)}</p>
-        <label>${lang==="ar"?"الكمية":"Qty"}: <input type="number" min="0" value="0" data-index="${i}" onchange="updateBasket()"></label>
+        <label>${lang==="ar"?"الكمية":"Qty"}: <input type="number" min="0" value="0" data-index="${i}" onchange="updateBasket(products)"></label>
       `;
       list.appendChild(card);
     });
   }
 
-  function updateBasket(){
-    let products=getProducts(),total=0,items=[];
-    document.querySelectorAll("input[type=number]").forEach(input=>{
+  function updateBasket(products){
+    let total=0,items=[];
+    document.querySelectorAll("input[type=number]").forEach((input,i)=>{
       let qty=parseInt(input.value)||0;
       if(qty>0){
-        let p=products[input.dataset.index];
+        let p=products[i];
         let name=(lang==="ar"&&p.name_ar)?p.name_ar:p.name;
         let line=`${name} x ${qty} = $${(p.price*qty).toFixed(2)}`;
         items.push(line);
