@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -24,13 +24,10 @@
     <button onclick="setLang('ar')">AR</button>
   </div>
 
-
   <h1 id="title">Shop — Nour Orthopaedics</h1>
   <p id="subtitle">Select products, adjust quantities, and see your total instantly.</p>
 
-
   <div class="grid" id="product-list"></div>
-
 
   <div id="basket">
     <h3 id="basket-title">Your Basket</h3>
@@ -38,11 +35,9 @@
     <strong><span id="total-label">Total:</span> $<span id="basket-total">0.00</span></strong>
   </div>
 
-
   <div class="checkout">
     <button class="btn btn-primary" id="order-btn" onclick="sendOrder()">Send Order via WhatsApp</button>
   </div>
-
 
 <script>
   let lang=localStorage.getItem("lang")||"en";
@@ -50,7 +45,6 @@
     en:{title:"Shop — Nour Orthopaedics",subtitle:"Select products, adjust quantities, and see your total instantly.",basket:"Your Basket",total:"Total:",order:"Send Order via WhatsApp"},
     ar:{title:"المتجر — نور للتجهيزات الطبية",subtitle:"اختر المنتجات وعدّل الكمية وشاهد المجموع مباشرة.",basket:"سلة المشتريات",total:"المجموع:",order:"إرسال الطلب عبر واتساب"}
   };
-
 
   function setLang(l){
     lang=l;localStorage.setItem("lang",l);
@@ -62,26 +56,29 @@
     loadProducts();updateBasket();
   }
 
-
   function getProducts(){return JSON.parse(localStorage.getItem("products")||"[]");}
 
-
   function loadProducts(){
-    const list=document.getElementById("product-list");list.innerHTML="";
-    getProducts().forEach((p,i)=>{
+    const list=document.getElementById("product-list");
+    list.innerHTML="";
+    let products=getProducts();
+    if(products.length===0){
+      list.innerHTML="<p>No products available. Please add items from the Admin page.</p>";
+      return;
+    }
+    products.forEach((p,i)=>{
       let name=(lang==="ar"&&p.name_ar)?p.name_ar:p.name;
       let card=document.createElement("div");
       card.className="card";
       card.innerHTML=`
         <h3>${name}</h3>
-        <div class="img-box">${p.image?`<img src="${p.image}">`:"<small>No image</small>"}</div>
+        <div class="img-box">${p.image?`<img src="${p.image}" alt="${name}">`:"<small>No image</small>"}</div>
         <p>${lang==="ar"?"السعر":"Price"}: $${p.price.toFixed(2)}</p>
         <label>${lang==="ar"?"الكمية":"Qty"}: <input type="number" min="0" value="0" data-index="${i}" onchange="updateBasket()"></label>
       `;
       list.appendChild(card);
     });
   }
-
 
   function updateBasket(){
     let products=getProducts(),total=0,items=[];
@@ -99,7 +96,6 @@
     document.getElementById("basket-total").textContent=total.toFixed(2);
   }
 
-
   function sendOrder(){
     let items=document.getElementById("basket-items").innerText;
     let total=document.getElementById("basket-total").textContent;
@@ -107,7 +103,6 @@
     let msg=(lang==="ar"?"مرحبا، أود تقديم طلب:%0A":"Hello, I'd like to place an order:%0A")+items+"%0A"+(lang==="ar"?"المجموع = ":"Total = ")+"$"+total;
     window.open(`https://wa.me/249916990070?text=${msg}`,'_blank');
   }
-
 
   setLang(lang);
 </script>
